@@ -30,6 +30,18 @@ constructor(
     private val compilationResolution
         get() = nodeJs.npmResolutionManager.requireInstalled()[project][npmProject.compilation]
 
+    init {
+        // TODO: temporary workaround for configuration cache enabled builds
+        onlyIf {
+            try {
+                compilationResolution.externalGradleDependencies
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+    }
+
     @get:Input
     val packageJsonCustomFields: Map<String, Any?>
         get() = PackageJson(fakePackageJsonValue, fakePackageJsonValue)
@@ -51,11 +63,13 @@ constructor(
     private val realExternalDependencies: Collection<NpmDependency>
         get() = compilationResolution.externalNpmDependencies
 
+    private val publicPackageJsonTaskName = npmProject.publicPackageJsonTaskName
+
     @get:OutputFile
     var packageJsonFile: File by property {
         project.buildDir
             .resolve("tmp")
-            .resolve(npmProject.publicPackageJsonTaskName)
+            .resolve(publicPackageJsonTaskName)
             .resolve(PACKAGE_JSON)
     }
 

@@ -24,6 +24,18 @@ open class RootPackageJsonTask : DefaultTask() {
     private val nodeJs = NodeJsRootPlugin.apply(project.rootProject)
     private val resolutionManager get() = nodeJs.npmResolutionManager
 
+    init {
+        // TODO: temporary workaround for configuration cache enabled builds
+        onlyIf {
+            try {
+                resolutionManager.packageJsonFiles
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+    }
+
     @get:OutputFile
     val rootPackageJson: File
         get() = nodeJs.rootPackageDir.resolve(NpmProject.PACKAGE_JSON)

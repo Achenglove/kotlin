@@ -32,12 +32,14 @@ open class KotlinNpmInstallTask : DefaultTask() {
 
     @Suppress("unused")
     @get:InputFiles
-    val packageJsonFiles: Collection<File>
-        get() = resolutionManager.packageJsonFiles
+    val packageJsonFiles: Collection<File> by lazy {
+        resolutionManager.packageJsonFiles
+    }
 
     @get:InputFiles
-    val preparedFiles: Collection<File>
-        get() = nodeJs.packageManager.preparedFiles(project)
+    val preparedFiles: Collection<File> by lazy {
+        nodeJs.packageManager.preparedFiles(project)
+    }
 
     // avoid using node_modules as output directory, as it is significantly slows down build
     @get:OutputFile

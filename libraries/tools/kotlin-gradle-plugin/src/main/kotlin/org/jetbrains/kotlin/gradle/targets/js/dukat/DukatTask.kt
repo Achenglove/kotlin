@@ -21,6 +21,18 @@ abstract class DukatTask(
     @get:Internal
     protected val nodeJs = NodeJsRootPlugin.apply(project.rootProject)
 
+    init {
+        // TODO: temporary workaround for configuration cache enabled builds
+        onlyIf {
+            try {
+                nodeJs.npmResolutionManager.packageJsonFiles
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+    }
+
     @get:Internal
     override val nodeModulesRequired: Boolean
         get() = true
